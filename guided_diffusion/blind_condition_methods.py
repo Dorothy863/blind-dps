@@ -59,9 +59,10 @@ class BlindConditioningMethod(ConditioningMethod):
 
                     reg_ord, reg_scale = reg_info[reg_target]
                     if reg_scale != 0.0:  # if got scale 0, skip calculating.
-                        norm += reg_scale * torch.linalg.norm(x_0_hat[reg_target].view(-1), ord=reg_ord)                        
-                    
-            norm_grad = torch.autograd.grad(outputs=norm, inputs=x_prev_values)
+                        norm = norm + reg_scale * torch.linalg.norm(x_0_hat[reg_target].view(-1), ord=reg_ord)                        
+            
+            with torch.autograd.set_detect_anomaly(True):
+                norm_grad = torch.autograd.grad(outputs=norm, inputs=x_prev_values)
             
         else:
             raise NotImplementedError
